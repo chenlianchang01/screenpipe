@@ -7,11 +7,11 @@ import type { SettingsField } from "./settings-search";
 
 /** Settings search index for this section. Co-located with the component so adding a field here means updating one file. See `SettingsField` in `./settings-search` for the schema. */
 export const searchIndex: SettingsField[] = [
-  { label: "AI presets", keywords: ["preset"] },
-  { label: "API key", keywords: ["openai", "anthropic", "key"] },
-  { label: "Model", keywords: ["gpt", "claude", "gemini", "llm"] },
-  { label: "Agent harness", keywords: ["acp", "codex", "claude code", "opencode", "cursor"] },
-  { label: "Embedding" },
+  { label: "AI 预设", keywords: ["preset"] },
+  { label: "API 密钥", keywords: ["openai", "anthropic", "key"] },
+  { label: "模型", keywords: ["gpt", "claude", "gemini", "llm"] },
+  { label: "智能体框架", keywords: ["acp", "codex", "claude code", "opencode", "cursor"] },
+  { label: "嵌入模型" },
 ];
 import { open as openUrl } from "@tauri-apps/plugin-shell";
 import { tauriFetchWithDeadline } from "@/lib/http/tauri-fetch";
@@ -405,7 +405,7 @@ const AISection = ({
     if (!isFormValid) {
       const needsConnectionTest = connectionTestRequired && !connectionTestPassed;
       toast({
-        title: needsConnectionTest ? "Test the connection" : "Validation errors",
+        title: needsConnectionTest ? "测试连接" : "Validation errors",
         description: needsConnectionTest
           ? "The current provider, URL, model, and API key must pass the connection test before saving"
           : "Please fix all validation errors before saving",
@@ -802,7 +802,7 @@ const AISection = ({
     // Step 1+2+3: Fetch models endpoint (tests endpoint, auth, and models in one call)
     setTestResults((prev) => ({
       ...prev,
-      endpoint: { status: "running", message: "Connecting..." },
+      endpoint: { status: "running", message: "连接中..." },
     }));
 
     // Anthropic: skip /v1/models (may not be available for all keys) and go straight to chat test
@@ -1344,7 +1344,7 @@ const AISection = ({
             ? validatePresetName(value, visiblePresets, preset?.id)
             : { isValid: true }
         }
-        placeholder="Preset name"
+        placeholder="预设名称"
         required={false}
         spellCheck={false}
         autoCorrect="off"
@@ -1401,7 +1401,7 @@ const AISection = ({
                           settingsPreset?.url,
                         )
                   }
-                  placeholder="Enter your AI API key"
+                  placeholder="输入你的 AI API 密钥"
                   required={apiKeyRequired}
                   className="pr-10"
                 />
@@ -1506,7 +1506,7 @@ const AISection = ({
                 </Button>
               )}
               {chatgptLoggedIn && !chatgptChecking && (
-                <span className="text-sm text-muted-foreground">Connected</span>
+                <span className="text-sm text-muted-foreground">已连接</span>
               )}
             </div>
           </div>
@@ -1553,7 +1553,7 @@ const AISection = ({
               <Command>
                 <CommandInput
                   value={modelSearch}
-                  placeholder="Select or type model name" 
+                  placeholder="选择或输入模型名称" 
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       const input = modelSearch.trim();
@@ -1752,7 +1752,7 @@ const AISection = ({
           }
           return { isValid: true };
         }}
-        placeholder="Enter your custom prompt here"
+        placeholder="在此输入自定义提示词"
         required={true}
         minLength={10}
         maxLength={5000}
@@ -1769,7 +1769,7 @@ const AISection = ({
               className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-left hover:bg-accent/50 transition-colors rounded-lg"
               onClick={() => setModelLimitsOpen(!modelLimitsOpen)}
             >
-              <span>Advanced model limits</span>
+              <span>高级模型参数限制</span>
               {modelLimitsOpen ? (
                 <ChevronUp className="h-4 w-4 text-muted-foreground" />
               ) : (
@@ -1838,16 +1838,16 @@ const AISection = ({
           >
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4" />
-              <span>Connection Test</span>
+              <span>连接测试</span>
               {connectionTestRequired && !connectionTestPassed && testStatus !== "testing" && (
-                <span className="text-xs text-destructive">Required before saving</span>
+                <span className="text-xs text-destructive">保存前必须测试</span>
               )}
               {testStatus === "done" && (
                 <span className="text-xs text-muted-foreground">
                   {testResults.chat.status === "pass"
-                    ? "Connection verified"
+                    ? "连接验证通过"
                     : testResults.endpoint.status === "fail"
-                    ? "Connection failed"
+                    ? "连接失败"
                     : testResults.auth.status === "fail"
                     ? "Auth failed"
                     : testResults.models.status === "fail"
@@ -1888,7 +1888,7 @@ const AISection = ({
                   <Zap className="h-3 w-3" />
                 )}
                 {testStatus === "testing"
-                  ? "Testing..."
+                  ? "测试中..."
                   : Object.keys(connectionFieldErrors).length > 0
                   ? "Fix fields to test"
                   : "Run diagnostics"}
@@ -1900,7 +1900,7 @@ const AISection = ({
                     ["endpoint", "1", "Endpoint reachable"],
                     ["auth", "2", "Auth valid"],
                     ["models", "3", "Models loaded"],
-                    ["chat", "4", "Test message"],
+                    ["chat", "4", "测试消息"],
                   ] as const
                 ).map(([key, num, label]) => {
                   const result = testResults[key];
@@ -1987,8 +1987,8 @@ const AISection = ({
                   ? "Fix validation errors to continue"
                   : connectionTestRequired && !connectionTestPassed
                   ? testStatus === "testing"
-                    ? "Testing this connection before saving"
-                    : "Test this connection before saving"
+                    ? "保存前正在测试此连接"
+                    : "保存前先测试此连接"
                   : "Complete the required fields to continue"}
               </TooltipContent>
             )}
@@ -2521,7 +2521,7 @@ useEffect(() => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => presetToDelete && removePreset(presetToDelete)}
@@ -2529,7 +2529,7 @@ useEffect(() => {
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                "Delete"
+                "删除"
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -2549,7 +2549,7 @@ useEffect(() => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={() =>
                 presetToSetDefault && setDefaultPreset(presetToSetDefault)

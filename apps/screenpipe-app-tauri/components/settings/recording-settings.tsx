@@ -33,34 +33,34 @@ import {
 
 /** Search fields for the Audio & meetings destination. */
 export const audioSearchIndex: SettingsField[] = [
-  { label: "Audio Recording", keywords: ["mic", "microphone", "audio"] },
-  { label: "Capture audio", keywords: ["continuous", "meetings only"] },
-  { label: "Transcription engine", keywords: ["whisper", "cloud", "stt"] },
-  { label: "Live meeting notes", keywords: ["captions", "meeting", "live"], conditional: true },
-  { label: "Append typed text to note", keywords: ["note", "append"], conditional: true },
-  { label: "Automatic meeting detection", keywords: ["zoom", "teams", "meet"], conditional: true },
-  { label: "Auto-select audio devices", keywords: ["devices", "bluetooth"], conditional: true },
-  { label: "Languages", keywords: ["transcript language", "language"], conditional: true },
-  { label: "Custom Vocabulary", keywords: ["vocabulary", "names", "jargon", "replacement"], conditional: true },
-  { label: "Smart recording", keywords: ["smart recording", "beta", "meeting", "piggyback", "per-process", "meeting audio"], conditional: true },
-  { label: "Always record bluetooth mic", keywords: ["bluetooth", "airpods", "headset", "a2dp", "sco", "meeting"], conditional: true },
-  { label: "Your name", keywords: ["speaker", "voice training"], conditional: true },
+  { label: "音频录制", keywords: ["mic", "microphone", "audio"] },
+  { label: "采集音频", keywords: ["continuous", "meetings only"] },
+  { label: "转写引擎", keywords: ["whisper", "cloud", "stt"] },
+  { label: "实时会议记录", keywords: ["captions", "meeting", "live"], conditional: true },
+  { label: "把输入文字追加到记录", keywords: ["note", "append"], conditional: true },
+  { label: "自动会议检测", keywords: ["zoom", "teams", "meet"], conditional: true },
+  { label: "自动选择音频设备", keywords: ["devices", "bluetooth"], conditional: true },
+  { label: "语言", keywords: ["transcript language", "language"], conditional: true },
+  { label: "自定义词汇", keywords: ["vocabulary", "names", "jargon", "replacement"], conditional: true },
+  { label: "智能录制", keywords: ["smart recording", "beta", "meeting", "piggyback", "per-process", "meeting audio"], conditional: true },
+  { label: "始终录制蓝牙麦克风", keywords: ["bluetooth", "airpods", "headset", "a2dp", "sco", "meeting"], conditional: true },
+  { label: "你的名字", keywords: ["speaker", "voice training"], conditional: true },
 ];
 
 /** Search fields for the Screen destination. */
 export const screenSearchIndex: SettingsField[] = [
-  { label: "Screen context capture", keywords: ["screen", "video", "accessibility"] },
-  { label: "Structured app context", keywords: ["semantic", "ai", "messages", "email", "tasks", "code"], conditional: true },
-  { label: "Use it for", keywords: ["memory", "computer use", "automation", "agent", "skills"], conditional: true },
-  { label: "Screen recording", keywords: ["screenshot", "pixels", "ocr", "jpeg", "capture"] },
-  { label: "Use all monitors", keywords: ["monitor", "display"], conditional: true },
+  { label: "屏幕上下文采集", keywords: ["screen", "video", "accessibility"] },
+  { label: "结构化应用上下文", keywords: ["semantic", "ai", "messages", "email", "tasks", "code"], conditional: true },
+  { label: "用途", keywords: ["memory", "computer use", "automation", "agent", "skills"], conditional: true },
+  { label: "屏幕录制", keywords: ["screenshot", "pixels", "ocr", "jpeg", "capture"] },
+  { label: "使用所有显示器", keywords: ["monitor", "display"], conditional: true },
   // conditional: monitor picker only renders when "Use all monitors" is off — paired right under that toggle.
-  { label: "Monitors", conditional: true },
-  { label: "Recording quality", keywords: ["fps", "quality"], conditional: true },
+  { label: "显示器", conditional: true },
+  { label: "录制画质", keywords: ["fps", "quality"], conditional: true },
   // conditional: hidden when screen recording is off (same gate as Recording quality).
-  { label: "Capture frequency", keywords: ["screenshot", "interval", "idle", "cadence", "every", "minimum"], conditional: true },
-  { label: "HD recording for meetings", keywords: ["hd", "meeting"] },
-  { label: "Chinese mirror", keywords: ["china", "mirror"] },
+  { label: "采集频率", keywords: ["screenshot", "interval", "idle", "cadence", "every", "minimum"], conditional: true },
+  { label: "会议高清录制", keywords: ["hd", "meeting"] },
+  { label: "中国镜像", keywords: ["china", "mirror"] },
 ];
 
 /** Backward-compatible aggregate for callers that still treat capture as one area. */
@@ -1652,7 +1652,7 @@ function HighFpsCard({
           <div className="flex items-center space-x-2.5 min-w-0">
             <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
             <div className="min-w-0">
-              <h3 className="text-sm font-medium text-foreground">HD recording for meetings</h3>
+              <h3 className="text-sm font-medium text-foreground">会议高清录制</h3>
               <p className="text-xs text-muted-foreground">
                 Capture screen at higher rate during calls so you can rewatch
                 slides, demos, and shared docs. {statusBadge}.
@@ -1720,7 +1720,7 @@ function HighFpsCard({
 
           <div className="flex items-center justify-between gap-3 pt-2 border-t border-border">
             <div className="min-w-0">
-              <h4 className="text-xs font-medium text-foreground">Quality</h4>
+              <h4 className="text-xs font-medium text-foreground">画质</h4>
               <p className="text-[11px] text-muted-foreground">
                 Lower interval = smoother replay + more disk. ≥ 33 ms (30 fps).
               </p>
@@ -2735,7 +2735,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
       <>
       {/* Audio */}
       <div className="space-y-2 pt-2">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">Audio &amp; meetings</h2>
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">音频与会议</h2>
 
         <LockedSetting settingKey="audio_recording">
         <div className="space-y-2">
@@ -2746,8 +2746,8 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
               <div className="flex items-center space-x-2.5">
                 <Mic className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div>
-                  <h3 className="text-sm font-medium text-foreground">Audio Recording</h3>
-                  <p className="text-xs text-muted-foreground">Capture audio from microphone and system</p>
+                  <h3 className="text-sm font-medium text-foreground">音频录制</h3>
+                  <p className="text-xs text-muted-foreground">采集麦克风和系统声音</p>
                 </div>
               </div>
               <ManagedSwitch settingKey="disableAudio" id="disableAudio" checked={!settings.disableAudio} onCheckedChange={(checked) => handleDisableAudioChange(!checked)} />
@@ -2772,11 +2772,11 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
                 onValueChange={(value) => handleSettingsChange({ audioCaptureMode: value as "always" | "meetings-only" | "disabled" }, true)}
               >
                 <SelectTrigger className="w-[200px] h-7 text-xs">
-                  <SelectValue placeholder="Select mode" />
+                  <SelectValue placeholder="选择模式" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="always">Always (continuous)</SelectItem>
-                  <SelectItem value="meetings-only">During meetings only</SelectItem>
+                  <SelectItem value="always">始终（持续）</SelectItem>
+                  <SelectItem value="meetings-only">仅会议期间</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -3565,7 +3565,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
               <div className="flex items-center space-x-2.5">
                 <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div>
-                  <h3 className="text-sm font-medium text-foreground">Auto-select audio devices</h3>
+                  <h3 className="text-sm font-medium text-foreground">自动选择音频设备</h3>
                   <p className="text-xs text-muted-foreground">Records all default devices. Turn off to exclude bluetooth headphones or pick specific devices.</p>
                 </div>
               </div>
@@ -3647,7 +3647,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
                   <div className="mb-2.5">
                     <div className="flex items-center space-x-2 mb-1.5">
                       <Mic className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      <h3 className="text-xs font-medium text-muted-foreground">Microphones (what you say)</h3>
+                      <h3 className="text-xs font-medium text-muted-foreground">麦克风（你说的话）</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-1.5">
                       {inputDevices.map(renderDevice)}
@@ -3658,7 +3658,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
                   <div>
                     <div className="flex items-center space-x-2 mb-1.5">
                       <Volume2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      <h3 className="text-xs font-medium text-muted-foreground">System audio (what you hear)</h3>
+                      <h3 className="text-xs font-medium text-muted-foreground">系统声音（你听到的）</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-1.5">
                       {outputDevices.map(renderDevice)}
@@ -3678,7 +3678,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
               <div className="flex items-center space-x-2.5">
                 <Bluetooth className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div>
-                  <h3 className="text-sm font-medium text-foreground">Always record bluetooth mic</h3>
+                  <h3 className="text-sm font-medium text-foreground">始终录制蓝牙麦克风</h3>
                   <p className="text-xs text-muted-foreground">
                     by default bluetooth mics are only recorded during meetings to avoid degrading headphone audio quality. turn on to record always.
                   </p>
@@ -3776,7 +3776,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
       {/* Screen */}
       <LockedSetting settingKey="screen_recording">
       <div className="space-y-2 pt-2">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">Screen</h2>
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">屏幕</h2>
 
         {/* Screen context capture toggle */}
         <Card className="border-border bg-card">
@@ -3785,7 +3785,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
               <div className="flex items-center space-x-2.5">
                 <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div>
-                  <h3 className="text-sm font-medium text-foreground">Screen context capture</h3>
+                  <h3 className="text-sm font-medium text-foreground">屏幕上下文采集</h3>
                   <p className="text-xs text-muted-foreground">Capture app/window context, accessibility text, screenshot images, and OCR fallback</p>
                 </div>
               </div>
@@ -3892,7 +3892,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
                 <div className="flex items-center space-x-2.5">
                   <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div>
-                    <h3 className="text-sm font-medium text-foreground">Screen recording</h3>
+                    <h3 className="text-sm font-medium text-foreground">屏幕录制</h3>
                     <p className="text-xs text-muted-foreground">Record screen pixels for the timeline and image-only text. Turn this off to stop screen recording; accessibility text stays searchable.</p>
                   </div>
                 </div>
@@ -3915,7 +3915,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
                 <div className="flex items-center space-x-2.5">
                   <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div>
-                    <h3 className="text-sm font-medium text-foreground">Use all monitors</h3>
+                    <h3 className="text-sm font-medium text-foreground">使用所有显示器</h3>
                     <p className="text-xs text-muted-foreground">Capture screenshot images from all available monitors</p>
                   </div>
                 </div>
@@ -3933,7 +3933,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
             <CardContent className="px-3 py-2.5">
               <div className="flex items-center space-x-2.5 mb-3">
                 <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
-                <h3 className="text-sm font-medium text-foreground">Monitors</h3>
+                <h3 className="text-sm font-medium text-foreground">显示器</h3>
               </div>
 
               <div className="flex items-end justify-center gap-6 py-2">
@@ -4005,7 +4005,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
                 <div className="flex items-center space-x-2.5 min-w-0">
                   <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="min-w-0">
-                    <h3 className="text-sm font-medium text-foreground">Recording quality</h3>
+                    <h3 className="text-sm font-medium text-foreground">录制画质</h3>
                     <p className="text-xs text-muted-foreground">
                       Pick "high" or "max" if your text looks blurry on a 4K / ultrawide. Higher = crisper + larger files.
                     </p>
@@ -4047,7 +4047,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
                 <div className="flex items-center space-x-2.5 mb-2">
                   <Monitor className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="min-w-0">
-                    <h3 className="text-sm font-medium text-foreground">Capture frequency</h3>
+                    <h3 className="text-sm font-medium text-foreground">采集频率</h3>
                     <p className="text-xs text-muted-foreground">
                       Always take a screenshot at least this often, even when the screen
                       isn&apos;t changing. Lower = fewer missed moments + more disk used.
@@ -4105,7 +4105,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
 
       {/* System */}
       <div className="space-y-2 pt-2">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">System</h2>
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">系统</h2>
 
         <Card className="border-border bg-card">
           <CardContent className="px-3 py-2.5">
@@ -4113,7 +4113,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
               <div className="flex items-center space-x-2.5">
                 <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div>
-                  <h3 className="text-sm font-medium text-foreground">Chinese mirror</h3>
+                  <h3 className="text-sm font-medium text-foreground">中国镜像</h3>
                   <p className="text-xs text-muted-foreground">For users in China</p>
                 </div>
               </div>
@@ -4130,7 +4130,7 @@ Your screen is a pipe. Everything you see, hear, and type flows through it. Scre
         <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2.5 [&::-webkit-details-marker]:hidden">
           <Zap className="h-4 w-4 shrink-0 text-muted-foreground" />
           <div>
-            <h2 className="text-sm font-medium text-foreground">Power &amp; battery</h2>
+            <h2 className="text-sm font-medium text-foreground">电源与电池</h2>
             <p className="text-xs text-muted-foreground">Battery-aware capture and keep-awake behavior</p>
           </div>
         </summary>
