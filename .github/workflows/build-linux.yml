@@ -83,7 +83,7 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: "screenpipe-linux-v2"
+          shared-key: "screenpipe-linux-v1"
           cache-directories: |
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
