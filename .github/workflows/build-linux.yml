@@ -83,7 +83,7 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: "screenpipe-linux-v1"
+          shared-key: "screenpipe-linux-v2"
           cache-directories: |
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
@@ -100,19 +100,17 @@ jobs:
         env:
           SCREENPIPE_RELEASE_TARGET: x86_64-unknown-linux-gnu
 
-      - name: Build Tauri app
+      - name: Build Tauri app (deb only)
         working-directory: apps/screenpipe-app-tauri
-        run: bunx tauri build --verbose --target x86_64-unknown-linux-gnu --features redact-onnx-cpu
+        run: bunx tauri build --verbose --target x86_64-unknown-linux-gnu --features redact-onnx-cpu --bundles deb
 
       - name: Find bundles
         run: |
-          find apps/screenpipe-app-tauri/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle -type f \( -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" \) -exec ls -lh {} \;
+          find apps/screenpipe-app-tauri/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle -type f -name "*.deb" -exec ls -lh {} \;
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: screenpipe-linux-bundle
-          path: |
-            apps/screenpipe-app-tauri/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
-            apps/screenpipe-app-tauri/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
+          name: screenpipe-linux-deb
+          path: apps/screenpipe-app-tauri/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
           if-no-files-found: error
