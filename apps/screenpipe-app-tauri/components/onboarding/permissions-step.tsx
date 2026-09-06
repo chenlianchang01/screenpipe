@@ -118,11 +118,11 @@ function PermissionRow({
       <div className="ml-auto shrink-0">
         {granted ? (
           <span className="font-mono text-[10px] text-muted-foreground">
-            granted
+            已授权
           </span>
         ) : interactive ? (
           <span className="font-mono text-[10px] text-muted-foreground group-hover:text-background/70">
-            grant →
+            去授权 →
           </span>
         ) : null}
       </div>
@@ -156,16 +156,16 @@ export default function PermissionsStep({
     {
       id: "mic",
       icon: <Mic className="w-3.5 h-3.5" strokeWidth={1.5} />,
-      title: "Capture what you say",
-      subtitle: "Lets Screenpipe transcribe your voice in meetings and calls",
+      title: "录制你的语音",
+      subtitle: "让 Screenpipe 在会议和通话中转写你的声音",
       check: () => commands.checkMicrophonePermission(),
       request: () => commands.requestPermission("microphone"),
     },
     {
       id: "accessibility",
       icon: <Keyboard className="w-3.5 h-3.5" strokeWidth={1.5} />,
-      title: "Read on-screen text",
-      subtitle: "Lets Screenpipe understand app content without OCR",
+      title: "读取屏幕文字",
+      subtitle: "让 Screenpipe 无需 OCR 即可理解应用内容",
       // Silent poll until the user asks for it, then the live tccd probe so a
       // grant made in Settings is seen without an app relaunch.
       check: () =>
@@ -181,13 +181,13 @@ export default function PermissionsStep({
     {
       id: "screen",
       icon: <Monitor className="w-3.5 h-3.5" strokeWidth={1.5} />,
-      title: "Capture your screen",
+      title: "录制你的屏幕",
       subtitle: (
         <>
-          Lets Screenpipe index what&apos;s on your screen: windows, docs,
-          chats, code. {" "}
+          让 Screenpipe 索引你屏幕上的内容：窗口、文档、
+          聊天、代码。{" "}
           <strong className="font-bold">
-            restart after granting this permission.
+            授予此权限后需要重启。
           </strong>
         </>
       ),
@@ -381,10 +381,10 @@ export default function PermissionsStep({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="w-12 h-12 mb-2" src="/128x128.png" alt="screenpipe" />
         <h1 className="font-mono text-base font-bold text-foreground">
-          Unlock the full experience
+          解锁完整功能
         </h1>
         <p className="font-mono text-[10px] text-muted-foreground mt-1 text-center max-w-xs">
-          Three permissions turn on recording.
+          授予以下权限以开启录制。
         </p>
       </div>
 

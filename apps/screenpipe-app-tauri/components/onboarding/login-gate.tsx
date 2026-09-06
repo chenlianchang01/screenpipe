@@ -280,7 +280,21 @@ const OnboardingLogin: React.FC<OnboardingLoginProps> = ({
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [handleNextSlide, isLoggedIn, isSettingsLoaded, suppressAutoAdvance]);
+
+    // [LOCAL BUILD PATCH] 未登录时自动跳过登录页，直接进入下一步（本地免费运行）
+    if (
+      !suppressAutoAdvance &&
+      !isLoggedIn &&
+      canSkipLogin &&
+      !hasAdvanced.current
+    ) {
+      const timer = setTimeout(() => {
+        hasAdvanced.current = true;
+        handleNextSlide();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [handleNextSlide, isLoggedIn, isSettingsLoaded, suppressAutoAdvance, canSkipLogin]);
 
   const handleLogin = useCallback(() => {
     posthog.capture("onboarding_login_clicked");
@@ -348,7 +362,7 @@ const OnboardingLogin: React.FC<OnboardingLoginProps> = ({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
         >
-          ai finally knows what you&apos;re doing
+          ai 终于知道你在做什么
         </motion.p>
 
         {isLoggedIn ? (
@@ -447,7 +461,7 @@ const OnboardingLogin: React.FC<OnboardingLoginProps> = ({
                   "sign in"
                 ) : (
                   <>
-                    get started
+                    开始使用
                     <ArrowRight
                       data-testid="login-cta-icon"
                       className="h-4 w-4"
@@ -473,7 +487,7 @@ const OnboardingLogin: React.FC<OnboardingLoginProps> = ({
             >
               {suppressAutoAdvance
                 ? "sign in with your enterprise account"
-                : "sign in or create a free account"}
+                : "登录或创建免费账户"}
             </motion.p>
 
             {/* Locality promise. This slide is the only one every platform
@@ -508,7 +522,7 @@ const OnboardingLogin: React.FC<OnboardingLoginProps> = ({
               onClick={handleSkip}
               className="font-mono text-xs text-muted-foreground/70 hover:text-foreground underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-colors mt-8 tracking-wide"
             >
-              skip for dev, continue without an account
+              跳过，无需账户直接使用
             </motion.button>
           )}
         </AnimatePresence>

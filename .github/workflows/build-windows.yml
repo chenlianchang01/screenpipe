@@ -1,0 +1,94 @@
+name: Build Windows App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Bun
+        run: npm install -g bun
+
+      - name: Install LLVM
+        run: |
+          choco install llvm -y --no-progress
+          $llvmBin = 'C:\Program Files\LLVM\bin'
+          echo "LIBCLANG_PATH=$llvmBin" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "$llvmBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "screenpipe-windows-v1"
+          cache-directories: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            apps/screenpipe-app-tauri/src-tauri/target
+
+      - name: Install frontend dependencies
+        working-directory: apps/screenpipe-app-tauri
+        run: bun install
+
+      - name: Download ONNX Runtime
+        run: |
+          $version = '1.24.2'
+          $extractDir = "apps/screenpipe-app-tauri/src-tauri/onnxruntime-win-x64-$version"
+          if (Test-Path $extractDir) { Remove-Item $extractDir -Recurse -Force }
+          $dmlVersion = '1.15.4'
+          Invoke-WebRequest -Uri "https://www.nuget.org/api/v2/package/Microsoft.ML.OnnxRuntime.DirectML/$version" -OutFile ort-dml.zip
+          Invoke-WebRequest -Uri "https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/$dmlVersion" -OutFile directml.zip
+          7z x ort-dml.zip -oort-dml -y
+          7z x directml.zip -odirectml -y
+          New-Item -ItemType Directory -Force -Path "$extractDir/lib" | Out-Null
+          Copy-Item "ort-dml/runtimes/win-x64/native/onnxruntime.dll" "$extractDir/lib/"
+          Copy-Item "ort-dml/runtimes/win-x64/native/onnxruntime.lib" "$extractDir/lib/"
+          Copy-Item "directml/bin/x64-win/DirectML.dll" "$extractDir/lib/"
+          $libDir = (Resolve-Path "$extractDir/lib").Path
+          "ORT_STRATEGY=system" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "ORT_LIB_LOCATION=$libDir" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "ORT_PREFER_DYNAMIC_LINK=1" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "$libDir" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          Write-Host "ONNX Runtime ready at $libDir"
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Run pre_build.js
+        working-directory: apps/screenpipe-app-tauri
+        run: bun ./scripts/pre_build.js
+        env:
+          SCREENPIPE_RELEASE_TARGET: x86_64-pc-windows-msvc
+
+      - name: Build Tauri app
+        working-directory: apps/screenpipe-app-tauri
+        run: bunx tauri build --verbose --target x86_64-pc-windows-msvc
+
+      - name: Find installer
+        run: |
+          Get-ChildItem -Path "apps/screenpipe-app-tauri/src-tauri/target/x86_64-pc-windows-msvc/release/bundle" -Recurse -Include *.exe,*.msi | ForEach-Object { Write-Host $_.FullName }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenpipe-windows-setup
+          path: |
+            apps/screenpipe-app-tauri/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            apps/screenpipe-app-tauri/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+          if-no-files-found: error

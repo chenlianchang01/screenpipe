@@ -106,6 +106,7 @@ const VERIFIED_PAID_PLAN_IDS = new Set([
 export const E2E_FORCE_BILLING_GATE_KEY = "screenpipe_e2e_force_billing_gate";
 
 export function isDevBillingBypassEnabled() {
+  // [LOCAL BUILD PATCH] 始终绕过付费/订阅门控，本地免费运行
   if (typeof window !== "undefined") {
     try {
       if (window.localStorage?.getItem(E2E_FORCE_BILLING_GATE_KEY) === "1") {
@@ -115,26 +116,12 @@ export function isDevBillingBypassEnabled() {
       // ignore storage access errors (private mode, etc.)
     }
   }
-  // Explicitly show the gate in dev/preview so the entitlement flow can be
-  // tested with `bun tauri dev` (which otherwise bypasses it via NODE_ENV).
-  if (process.env.NEXT_PUBLIC_SCREENPIPE_FORCE_BILLING_GATE === "true") {
-    return false;
-  }
-  return (
-    process.env.TAURI_ENV_DEBUG === "true" ||
-    process.env.NODE_ENV === "development" ||
-    process.env.NEXT_PUBLIC_SCREENPIPE_DEV_BILLING_BYPASS === "true" ||
-    // e2e builds bypass the paywall by default so the suite exercises real
-    // features; the dedicated gate spec re-enables it via the key above.
-    process.env.NEXT_PUBLIC_SCREENPIPE_E2E === "true"
-  );
+  return true;
 }
 
-// Deliberately separate from the broader dev billing bypass. Most local and
-// preview builds should still exercise login unless this test-only affordance
-// was explicitly compiled into the frontend.
+// [LOCAL BUILD PATCH] 始终允许跳过登录，本地免费运行
 export function isDevLoginSkipEnabled() {
-  return process.env.NEXT_PUBLIC_SCREENPIPE_DEV_LOGIN_SKIP === "true";
+  return true;
 }
 
 // Show the dev-only login helper (paste a token / screenpipe:// URL) when we are
