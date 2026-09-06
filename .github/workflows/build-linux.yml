@@ -61,9 +61,20 @@ jobs:
             libwebkit2gtk-4.1-dev \
             xdg-desktop-portal-gtk \
             libsecret-1-dev \
-            libopenblas-dev
+            libopenblas-dev \
+            binutils
           echo "=== PipeWire version ==="
           pkg-config --modversion libpipewire-0.3
+
+      - name: Download glibc2.17 ONNX Runtime static lib (avoid pyke GLIBC 2.38)
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -fsSL --retry 5 -o ort-static.zip "https://github.com/csukuangfj/onnxruntime-libs/releases/download/v1.24.4/onnxruntime-linux-x64-static_lib-1.24.4-glibc2_17.zip"
+          unzip -q ort-static.zip
+          ORT_LIB="$RUNNER_TEMP/onnxruntime-linux-x64-static_lib-1.24.4-glibc2_17/lib"
+          test -f "$ORT_LIB/libonnxruntime.a"
+          echo "ORT_LIB_PATH=$ORT_LIB" >> "$GITHUB_ENV"
+          ls -lh "$ORT_LIB"
 
       - name: Setup OpenBLAS path
         run: |
@@ -91,7 +102,7 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: "screenpipe-linux-2204-v2"
+          shared-key: "screenpipe-linux-2204-v3"
           cache-directories: |
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
@@ -111,14 +122,30 @@ jobs:
       - name: Build Tauri app (deb only, GLIBC 2.35)
         working-directory: apps/screenpipe-app-tauri
         run: bunx tauri build --verbose --target x86_64-unknown-linux-gnu --features redact-onnx-cpu --bundles deb
+        env:
+          ORT_LIB_PATH: ${{ env.ORT_LIB_PATH }}
 
-      - name: Verify GLIBC version
+      - name: Verify GLIBC floor (<= 2.35)
         run: |
+          set -e
           BIN=apps/screenpipe-app-tauri/src-tauri/target/x86_64-unknown-linux-gnu/release/screenpipe
-          echo "=== objdump GLIBC 依赖符号 ==="
+          echo "=== 主二进制 GLIBC 依赖符号 ==="
           objdump -T "$BIN" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sort -V | uniq
-          echo "=== ldd 版本 ==="
+          echo "=== 最高 GLIBC 版本 ==="
+          MAX=$(objdump -T "$BIN" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sort -V | tail -1)
+          echo "max = $MAX"
+          echo "=== 检查 GLIBC 2.36+ 与 __isoc23 (2.38 标志) ==="
+          HIGH=$(objdump -T "$BIN" | grep -oE 'GLIBC_2\.(3[6-9]|[4-9][0-9])' | sort -u || true)
+          ISOC=$(objdump -T "$BIN" | grep -c '__isoc23' || true)
+          echo "high=[$HIGH] isoc23_count=$ISOC"
+          if [ -n "$HIGH" ] || [ "$ISOC" != "0" ]; then echo "::error::GLIBC floor exceeds 2.35 (high=$HIGH isoc23=$ISOC)"; exit 1; fi
+          echo "=== 扫描产物内所有 .so 的最高 GLIBC ==="
+          find apps/screenpipe-app-tauri/src-tauri/target/x86_64-unknown-linux-gnu/release -name "*.so" -print0 | while IFS= read -r -d '' so; do
+            echo "$so -> $(objdump -T "$so" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sort -V | tail -1)"
+          done
+          echo "=== 构建机 glibc ==="
           ldd --version | head -1
+          echo "GLIBC FLOOR CHECK PASSED"
 
       - name: Find bundles
         run: |
