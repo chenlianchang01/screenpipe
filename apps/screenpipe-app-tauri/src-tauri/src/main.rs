@@ -256,10 +256,8 @@ fn get_env(name: &str) -> String {
 /// egress, missing permissions dialog). When set, startup marks onboarding
 /// complete so the app lands on the main view.
 fn should_skip_onboarding() -> bool {
-    std::env::var("SCREENPIPE_SKIP_ONBOARDING")
-        .ok()
-        .map(|s| matches!(s.trim().to_lowercase().as_str(), "1" | "true" | "yes"))
-        .unwrap_or(false)
+    // [CN-PATCH] 本地免费版：恒跳过 onboarding/登录注册流程
+    true
 }
 
 fn should_prevent_window_close(label: &str) -> bool {

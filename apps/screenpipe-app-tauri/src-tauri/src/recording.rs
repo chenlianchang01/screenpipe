@@ -12,7 +12,7 @@ use crate::capture_session::CaptureSession;
 use crate::config;
 use crate::permissions::{do_permissions_check, OSPermissionStatus};
 use crate::server_core::ServerCore;
-use crate::store::{LocalPlanPolicy, OnboardingStore, SettingsStore};
+use crate::store::SettingsStore; // [CN-PATCH] 移除未使用的 LocalPlanPolicy/OnboardingStore（账号 gate 已恒放行）
 use screenpipe_engine::RecordingConfig;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -170,70 +170,17 @@ fn server_access_policy(
     has_verified_local_plan
 }
 
-pub(crate) fn server_access_allowed(app: &tauri::AppHandle, store: &SettingsStore) -> bool {
-    let startup_authentication = app
-        .try_state::<crate::startup_auth::AuthenticationStatus>()
-        .map(|status| *status)
-        .unwrap_or(crate::startup_auth::AuthenticationStatus::LoggedOut);
-    let authenticated_after_startup = if cfg!(feature = "enterprise-build") {
-        crate::enterprise_policy::recording_authorized()
-    } else {
-        store.has_cloud_authentication()
-    };
-    if startup_authentication == crate::startup_auth::AuthenticationStatus::LoggedOut
-        && !authenticated_after_startup
-    {
-        return false;
-    }
-
-    server_access_policy(
-        cfg!(feature = "enterprise-build"),
-        cfg!(debug_assertions),
-        store.local_plan_policy() != LocalPlanPolicy::Unknown,
-        crate::enterprise_policy::recording_authorized(),
-        !cfg!(debug_assertions) && store.requires_enterprise_app_for_consumer(),
-    )
+pub(crate) fn server_access_allowed(_app: &tauri::AppHandle, _store: &SettingsStore) -> bool {
+    // [CN-PATCH] 本地免费版：无需登录/订阅，始终允许启动本地 API 引擎
+    true
 }
 
 /// Consumer builds allow signed-in accounts to record on the free plan.
 /// Enterprise builds keep their native entitlement guard, and consumer builds
 /// still reject accounts that are required to use an enterprise binary.
-pub(crate) fn recording_access_allowed(app: &tauri::AppHandle, store: &SettingsStore) -> bool {
-    let trial_activation_paywall = !crate::should_skip_onboarding()
-        && OnboardingStore::get(app)
-            .ok()
-            .flatten()
-            .unwrap_or_default()
-            .blocks_trial_activation_recording();
-    let resolved_authentication = app
-        .try_state::<crate::startup_auth::AuthenticationStatus>()
-        .map(|status| *status)
-        .unwrap_or(crate::startup_auth::AuthenticationStatus::LoggedOut);
-    // The bootstrap result owns initial startup ordering. A later successful
-    // sign-in may open recording without relaunching the already-initialized
-    // app, so derive the current authenticated state from the same native
-    // authorities used by the runtime guards.
-    let authentication_status = if resolved_authentication
-        == crate::startup_auth::AuthenticationStatus::LoggedOut
-        && if cfg!(feature = "enterprise-build") {
-            crate::enterprise_policy::recording_authorized()
-        } else {
-            store.has_cloud_authentication()
-        }
-    {
-        crate::startup_auth::AuthenticationStatus::Authenticated
-    } else {
-        resolved_authentication
-    };
-    recording_access_policy(
-        cfg!(feature = "enterprise-build"),
-        cfg!(debug_assertions),
-        store.local_plan_policy() != LocalPlanPolicy::Unknown,
-        crate::enterprise_policy::recording_authorized(),
-        !cfg!(debug_assertions) && store.requires_enterprise_app_for_consumer(),
-        trial_activation_paywall,
-        authentication_status,
-    )
+pub(crate) fn recording_access_allowed(_app: &tauri::AppHandle, _store: &SettingsStore) -> bool {
+    // [CN-PATCH] 本地免费版：无需登录/订阅，始终允许屏幕与音频录制
+    true
 }
 
 fn require_recording_access(app: &tauri::AppHandle, store: &SettingsStore) -> Result<(), String> {

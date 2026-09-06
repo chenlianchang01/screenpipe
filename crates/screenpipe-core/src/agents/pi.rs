@@ -3811,7 +3811,7 @@ fn download_portable_git_into(screenpipe_dir: &Path) -> std::result::Result<Stri
 
     // Pinned version for reproducibility
     const PORTABLE_GIT_VERSION: &str = "2.47.1";
-    const PORTABLE_GIT_URL: &str = "https://github.com/git-for-windows/git/releases/download/v2.47.1.windows.1/PortableGit-2.47.1-64-bit.7z.exe";
+    const PORTABLE_GIT_URL: &str = "https://registry.npmmirror.com/-/binary/git-for-windows/v2.47.1.windows.1/PortableGit-2.47.1-64-bit.7z.exe"; // [CN-PATCH] 国内镜像，SHA256 与官方一致
     const PORTABLE_GIT_SHA256: &str =
         "4f3f21f4effcb659566883ee1ed3ae403e5b3d7a0699cee455f6cd765e1ac39c";
 
